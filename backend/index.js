@@ -1,6 +1,5 @@
 // Import necessary modules (deprecated with require)
 const express = require('express');
-const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 const cors = require('cors');
 
@@ -8,27 +7,30 @@ const cors = require('cors');
 const app = express();
 
 app.use(cors())
+app.use(express.json()); // <-- parse JSON bodies
 
 // Load environment variables
 dotenv.config();
 
-// Middleware to parse JSON data
-app.use(bodyParser.json());
+// Homepage
+app.get("/", (req, res) => {
+  res.json({ message: "Homepage" });
+});
 
-// Define a basic route
-app.get('/', (req, res) => {
-    res.send('Welcome to my custom Node.js backend!');
+// Example route
+app.get("/api/", (req, res) => {
+  res.json({ message: "Hello from backend!" });
 });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).send('Something went wrong!');
+  console.error(err.stack);
+  res.status(500).send('Something went wrong!');
 });
 
 // Start the server
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-    console.log('server listening on port 8080')
+  console.log('server listening on port 8080')
 })
 
