@@ -1,0 +1,28 @@
+{
+  "name": "web-shop",
+  "version": "1.0.0",
+  "description": "informatik project",
+  "homepage": "https://github.com/lukeSkylander/EF-Projekt#readme",
+  "bugs": {
+    "url": "https://github.com/lukeSkylander/EF-Projekt/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lukeSkylander/EF-Projekt.git"
+  },
+  "license": "ISC",
+  "author": "Adrian",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}
