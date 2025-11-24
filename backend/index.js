@@ -1,36 +1,23 @@
-// Import necessary modules (deprecated with require)
+// index.js
 const express = require('express');
-const dotenv = require('dotenv');
 const cors = require('cors');
+require('dotenv').config();
 
-// Initialize the app
 const app = express();
+app.use(cors());
+app.use(express.json());
 
-app.use(cors())
-app.use(express.json()); // <-- parse JSON bodies
+// ROUTES
+app.use("/api/auth", require("./routes/auth"));
+app.use("/api/users", require("./routes/users"));
+app.use("/api/products", require("./routes/products"));
+app.use("/api/addresses", require("./routes/addresses"));
+app.use("/api/orders", require("./routes/orders"));
+app.use("/api/cart", require("./routes/cart"));
 
-// Load environment variables
-dotenv.config();
+app.get("/", (req, res) => res.send("Backend running"));
 
-// Homepage
-app.get("/", (req, res) => {
-  res.json({ message: "Homepage" });
-});
-
-// Example route
-app.get("/api/", (req, res) => {
-  res.json({ message: "Hello from backend!" });
-});
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Something went wrong!');
-});
-
-// Start the server
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-  console.log('server listening on port 8080')
-})
+app.listen(process.env.PORT || 5000, () =>
+  console.log("Server running on port 5000")
+);
 
