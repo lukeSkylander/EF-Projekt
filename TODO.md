@@ -4,4 +4,5 @@ adrian:
 - complete database (mariadb)  
 
 Luca:  
-- something  
+- Anpassung des frames für Kleidungsshop
+- Erstellung mehrerer Tabs e.g User, Contacts, Products, Home etc.
