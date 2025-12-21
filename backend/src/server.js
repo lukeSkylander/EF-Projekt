@@ -4,7 +4,7 @@ import auth from "./routes/auth.js";
 import users from "./routes/users.js";
 import products from "./routes/products.js";
 import addresses from "./routes/addresses.js";
-// import orders from "./routes/orders.js";
+import orders from "./routes/orders.js";
 import cart from "./routes/cart.js";
 
 const app = express(); // create an express app
@@ -19,7 +19,7 @@ app.use("/auth", auth);
 app.use("/users", users);
 app.use("/products", products);
 app.use("/addresses", addresses);
-// app.use("/orders", orders);
+app.use("/orders", orders);
 app.use("/cart", cart);
 
 app.get("/", (req, res) => res.send("Backend running"));
