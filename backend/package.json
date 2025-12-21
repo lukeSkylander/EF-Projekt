@@ -5,6 +5,9 @@
   "keywords": [],
   "license": "ISC",
   "author": "",
+  "scripts": {
+    "dev": "node --watch --env-file=.env ./src/server.js"
+  },
   "type": "module",
   "main": "index.js",
   "dependencies": {

@@ -1,23 +1,28 @@
 // index.js
 import express from "express";
-// import cors from 'cors';
+import middleware from "./middleware/middleware.js";
+import auth from "./routes/auth.js";
+import users from "./routes/users.js";
+import products from "./routes/products.js";
+import addresses from "./routes/addresses.js";
+import orders from "./routes/orders.js";
+import cart from "./routes/cart.js";
 
 const app = express(); // create an express app
+const PORT = process.env.PATH || 5000;
 export default app;
 
-app.use(cors());
+// Middleware
 app.use(express.json());
 
-// ROUTES
-app.use("/api/auth", require("./routes/auth"));
-app.use("/api/users", require("./routes/users"));
-app.use("/api/products", require("./routes/products"));
-app.use("/api/addresses", require("./routes/addresses"));
-app.use("/api/orders", require("./routes/orders"));
-app.use("/api/cart", require("./routes/cart"));
+// Routes
+app.use("/auth", auth);
+app.use("/users", users);
+app.use("/products", products);
+app.use("/addresses", addresses);
+app.use("/orders", orders);
+app.use("/cart", cart);
 
 app.get("/", (req, res) => res.send("Backend running"));
 
-app.listen(process.env.PORT || 5000, () =>
-	console.log(`Server running on port 5000`),
-);
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
