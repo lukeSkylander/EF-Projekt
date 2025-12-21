@@ -2,54 +2,89 @@
 import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import db from "../config/database.js";
+import db from "../db.js";
 
 const router = express.Router();
 
 router.post("/register", async (req, res) => {
-	const { username, password } = req.body;
-
-	// encrypt the password
-	const hashedPassword = bcrypt.hashSync(password, 8);
-
-	// save the new user and the password to the db
 	try {
-		db.none(`INSERT INTO users (username, password)
-	    VALUES (${username}, ${hashedPassword})`);
+		const { email, password, name } = req.body;
+
+		// Validate
+		if (!email || !password || !name) {
+			res.status(400).json({ error: "All fields required" });
+		}
+
+		// Check if users exists
+		const existing = await db.oneOrNone(
+			`SELECT * FROM users WHERE email = $1`,
+			[email],
+		);
+
+		if (existing) {
+			res.status(400).json({ error: "User already exists" });
+		}
+		// encrypt the password
+		const salt = await bcrypt.genSalt(10);
+		const password_hash = await bcrypt.hash(password, salt);
+
+		// create a user
+		const user = await db.one(
+			` INSERT INTO users (email, password_hash, name) VALUES ($1, $2, $3) RETURNING id, email, name `,
+			[email, password_hash, name],
+		);
 
 		// create a token
 		const token = jwt.sign(
-			{ id: result.lastInsertRowid },
+			{ userId: user.id, email: user.email },
 			process.env.JWT_SECRET,
 			{ expiresIn: "24h" },
 		);
-		res.json({ token });
+		res.status(201).json({
+			message: "User registered successfully",
+			token,
+			user,
+		});
 	} catch (err) {
-		console.log(err.message);
-		// Server has broken down
-		res.sendStatus(503);
+		console.error(err);
+		res.status(500).json({ error: "Server error", details: err.message });
 	}
 });
 
-// LOGIN
 router.post("/login", async (req, res) => {
-	const { email, password } = req.body;
+	try {
+		const { email, password } = req.body;
+		// Validate input
+		if (!email || !password) {
+			res.status(400).json({ error: "All fields required" });
+		}
 
-	const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
-	if (rows.length === 0)
-		return res.status(400).json({ message: "Invalid email" });
+		// Find user
+		const user = await db.oneOrNone(`SELECT * FROM users WHERE email = $1`, [
+			email,
+		]);
+		// Check password
+		const validPassword = await bcrypt.compare(password, user.password_hash);
 
-	const user = rows[0];
-	const valid = await bcrypt.compare(password, user.password_hash);
-	if (!valid) return res.status(400).json({ message: "Invalid password" });
+		if (!user || !validPassword) {
+			res.status(400).json({ error: "Invalid credentials" });
+		}
 
-	const token = jwt.sign(
-		{ id: user.id, role: user.role },
-		process.env.JWT_SECRET,
-		{ expiresIn: "7d" },
-	);
-
-	res.json({ token });
+		// Create JWT token
+		const token = jwt.sign(
+			{ userId: user.id, email: user.email },
+			process.env.JWT_SECRET,
+			{ expiresIn: "24h" },
+		);
+		res.json({
+			message: "Login successful",
+			token,
+			user,
+		});
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ error: "Server error" });
+	}
 });
 
-module.exports = router;
+export default router;
