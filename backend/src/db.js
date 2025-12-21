@@ -112,18 +112,19 @@ FOR EACH ROW
 EXECUTE FUNCTION check_design_product();
 `;
 
-async function main() {
-	await client.connect();
-	await client.query(sql);
-	await client.end();
+async function createTables() {
+	try {
+		await client.connect();
+		console.log("Connected to database");
+		await client.query(sql);
+		console.log("Tables created successfully");
+	} catch (err) {
+		console.log(err);
+	} finally {
+		await client.end();
+	}
 
 	console.log("PostgreSQL schema created successfully.");
 }
 
-main().catch(async (err) => {
-	console.error(err);
-	try {
-		await client.end();
-	} catch { }
-	process.exit(1);
-});
+createTables();
