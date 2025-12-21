@@ -1,10 +1,10 @@
 // index.js
-import express from 'express';
+import express from "express";
 // import cors from 'cors';
-import dotenv from 'dotenv';
-dotenv.config();
 
-const app = express();
+const app = express(); // create an express app
+export default app;
+
 app.use(cors());
 app.use(express.json());
 
@@ -19,6 +19,5 @@ app.use("/api/cart", require("./routes/cart"));
 app.get("/", (req, res) => res.send("Backend running"));
 
 app.listen(process.env.PORT || 5000, () =>
-  console.log("Server running on port 5000")
+	console.log(`Server running on port 5000`),
 );
-
