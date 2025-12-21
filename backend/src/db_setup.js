@@ -11,11 +11,7 @@ await db.none(`
         password_hash VARCHAR(255) NOT NULL,
         username VARCHAR(100) UNIQUE,
         first_name VARCHAR(100),
-        last_name VARCHAR(100),
-        role VARCHAR(50) DEFAULT 'customer',
-        is_active BOOLEAN DEFAULT true,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        last_name VARCHAR(100)
     );
 `);
 

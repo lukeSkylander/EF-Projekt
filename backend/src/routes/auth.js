@@ -2,26 +2,33 @@
 import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import db from "../config/database.js";
 
 const router = express.Router();
-import db from "../db.js";
 
-// REGISTER
 router.post("/register", async (req, res) => {
-	const { username, email, password } = req.body;
+	const { username, password } = req.body;
 
-	if (!username || !email || !password)
-		return res.status(400).json({ message: "Missing fields" });
+	// encrypt the password
+	const hashedPassword = bcrypt.hashSync(password, 8);
 
-	const hash = await bcrypt.hash(password, 10);
+	// save the new user and the password to the db
+	try {
+		db.none(`INSERT INTO users (username, password)
+	    VALUES (${username}, ${hashedPassword})`);
 
-	await db.query(
-		`INSERT INTO users (id, username, email, password_hash, role, created_at)
-	VALUES (NULL, ?, ?, ?, 'customer', NOW())`,
-		[username, email, hash],
-	);
-
-	res.json({ message: "Registered successfully" });
+		// create a token
+		const token = jwt.sign(
+			{ id: result.lastInsertRowid },
+			process.env.JWT_SECRET,
+			{ expiresIn: "24h" },
+		);
+		res.json({ token });
+	} catch (err) {
+		console.log(err.message);
+		// Server has broken down
+		res.sendStatus(503);
+	}
 });
 
 // LOGIN
