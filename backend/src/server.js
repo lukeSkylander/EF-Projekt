@@ -1,5 +1,6 @@
 // index.js
 import express from "express";
+import cors from "cors";
 import auth from "./routes/auth.js";
 import users from "./routes/users.js";
 import products from "./routes/products.js";
@@ -11,6 +12,7 @@ const app = express(); // create an express app
 const PORT = process.env.PORT || 5000;
 export default app;
 
+app.use(cors());
 // Middleware
 app.use(express.json());
 
