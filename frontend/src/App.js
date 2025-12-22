@@ -1,6 +1,14 @@
 ﻿import { useEffect, useState } from "react";
 import "./App.css";
-import { authAPI, productsAPI, cartAPI, addressesAPI, ordersAPI, usersAPI, getToken } from "./api";
+import {
+	authAPI,
+	productsAPI,
+	cartAPI,
+	addressesAPI,
+	ordersAPI,
+	usersAPI,
+	getToken,
+} from "./api";
 
 function App() {
 	const [tab, setTab] = useState("home");
@@ -10,14 +18,14 @@ function App() {
 	const [search, setSearch] = useState("");
 	const [selectedCategory, setSelectedCategory] = useState("All");
 
-	// Login/Register form states  
+	// Login/Register form states
 	const [loginEmail, setLoginEmail] = useState("");
 	const [loginPassword, setLoginPassword] = useState("");
 	const [regName, setRegName] = useState("");
 	const [regEmail, setRegEmail] = useState("");
 	const [regPassword, setRegPassword] = useState("");
 
-	// Checkout form states  
+	// Checkout form states
 	const [checkoutStreet, setCheckoutStreet] = useState("");
 	const [checkoutCity, setCheckoutCity] = useState("");
 	const [checkoutPostal, setCheckoutPostal] = useState("");
@@ -26,7 +34,7 @@ function App() {
 	const [error, setError] = useState("");
 	const [success, setSuccess] = useState("");
 
-	// Check if logged in on mount  
+	// Check if logged in on mount
 	useEffect(() => {
 		if (getToken()) {
 			loadUser();
@@ -98,6 +106,21 @@ function App() {
 		setTab("home");
 	};
 
+	const handleDeleteAccount = async () => {
+		if (!window.confirm("Are you sure? This cannot be undone!")) return;
+
+		try {
+			await usersAPI.deleteMe();
+			authAPI.logout();
+			setUser(null);
+			setCart({ items: [], total: 0, count: 0 });
+			setSuccess("Account deleted successfully");
+			setTab("home");
+		} catch (err) {
+			setError(err.response?.data?.error || "Failed to delete account");
+		}
+	};
+
 	const handleAddToCart = async (productId) => {
 		if (!user) {
 			setError("Please login first");
@@ -137,7 +160,7 @@ function App() {
 			return;
 		}
 		try {
-			// Create address  
+			// Create address
 			const address = await addressesAPI.create({
 				street: checkoutStreet,
 				city: checkoutCity,
@@ -145,7 +168,7 @@ function App() {
 				country: checkoutCountry,
 			});
 
-			// Create order  
+			// Create order
 			await ordersAPI.create(address.id);
 
 			setSuccess("Order placed successfully!");
@@ -167,9 +190,10 @@ function App() {
 	};
 
 	const filteredProducts = search
-		? products.filter((p) =>
-			p.name.toLowerCase().includes(search.toLowerCase()) ||
-			p.category.toLowerCase().includes(search.toLowerCase())
+		? products.filter(
+			(p) =>
+				p.name.toLowerCase().includes(search.toLowerCase()) ||
+				p.category.toLowerCase().includes(search.toLowerCase()),
 		)
 		: products;
 
@@ -177,10 +201,17 @@ function App() {
 		<div className="page">
 			<nav className="topbar">
 				<div className="brand">
-					<img className="brand-logo" src="/eclipse-logo.jpg" alt="Eclipse Studios" />
+					<img
+						className="brand-logo"
+						src="/eclipse-logo.jpg"
+						alt="Eclipse Studios"
+					/>
 				</div>
 				<div className="nav-links">
-					<button className={`nav-link ${tab === "home" ? "active" : ""}`} onClick={() => setTab("home")}>
+					<button
+						className={`nav-link ${tab === "home" ? "active" : ""}`}
+						onClick={() => setTab("home")}
+					>
 						Startseite
 					</button>
 					<button
@@ -201,13 +232,22 @@ function App() {
 					>
 						Hoodies
 					</button>
-					<button className={`nav-link ${tab === "products" ? "active" : ""}`} onClick={() => setTab("products")}>
+					<button
+						className={`nav-link ${tab === "products" ? "active" : ""}`}
+						onClick={() => setTab("products")}
+					>
 						Alle Produkte
 					</button>
-					<button className={`nav-link ${tab === "cart" ? "active" : ""}`} onClick={() => setTab("cart")}>
+					<button
+						className={`nav-link ${tab === "cart" ? "active" : ""}`}
+						onClick={() => setTab("cart")}
+					>
 						Warenkorb ({cart.count || 0})
 					</button>
-					<button className={`nav-link ${tab === "account" ? "active" : ""}`} onClick={() => setTab("account")}>
+					<button
+						className={`nav-link ${tab === "account" ? "active" : ""}`}
+						onClick={() => setTab("account")}
+					>
 						{user ? user.name : "Konto"}
 					</button>
 					{user && (
@@ -228,7 +268,8 @@ function App() {
 						<div className="eyebrow">Eclipse Studios</div>
 						<h1>Monochrome Streetwear, inspiriert vom Logo.</h1>
 						<p className="lede">
-							Klare Silhouetten, satte Stoffe und dezentes Branding. T-Shirts und Hoodies in abgestimmten Farbstories.
+							Klare Silhouetten, satte Stoffe und dezentes Branding. T-Shirts
+							und Hoodies in abgestimmten Farbstories.
 						</p>
 						<div className="hero-actions">
 							<button className="primary" onClick={() => setTab("products")}>
@@ -254,7 +295,9 @@ function App() {
 						<div className="collection-card">
 							<p className="eyebrow">T-Shirts</p>
 							<h3>Elevated cores</h3>
-							<p className="muted">Schwerer Jersey, klare Linien, ruhige Farben.</p>
+							<p className="muted">
+								Schwerer Jersey, klare Linien, ruhige Farben.
+							</p>
 							<button
 								className="mini ghost-link"
 								onClick={() => {
@@ -268,7 +311,9 @@ function App() {
 						<div className="collection-card">
 							<p className="eyebrow">Hoodies</p>
 							<h3>Layered warmth</h3>
-							<p className="muted">Gebürstetes Fleece und limitierte Färbungen.</p>
+							<p className="muted">
+								Gebürstetes Fleece und limitierte Färbungen.
+							</p>
 							<button
 								className="mini ghost-link"
 								onClick={() => {
@@ -289,7 +334,11 @@ function App() {
 						<div>
 							<p className="eyebrow">Kategorien</p>
 							<h2>
-								{tab === "tshirts" ? "T-Shirts" : tab === "hoodies" ? "Hoodies" : "Alle Produkte"}
+								{tab === "tshirts"
+									? "T-Shirts"
+									: tab === "hoodies"
+										? "Hoodies"
+										: "Alle Produkte"}
 							</h2>
 						</div>
 						<div className="control-group">
@@ -333,7 +382,10 @@ function App() {
 								</div>
 								<div className="card-footer">
 									<span className="price">CHF {product.price}</span>
-									<button className="secondary" onClick={() => handleAddToCart(product.id)}>
+									<button
+										className="secondary"
+										onClick={() => handleAddToCart(product.id)}
+									>
 										In den Warenkorb
 									</button>
 								</div>
@@ -354,7 +406,9 @@ function App() {
 						<div className="pill mini-pill">Total: CHF {cart.total}</div>
 					</div>
 					{cart.items.length === 0 ? (
-						<p className="muted">Dein Warenkorb ist leer. Füge Artikel aus dem Shop hinzu.</p>
+						<p className="muted">
+							Dein Warenkorb ist leer. Füge Artikel aus dem Shop hinzu.
+						</p>
 					) : (
 						<div className="cart-list">
 							{cart.items.map((item) => (
@@ -367,9 +421,13 @@ function App() {
 									</div>
 									<div className="cart-actions">
 										<div className="qty">
-											<button onClick={() => handleUpdateCartQty(item.id, -1)}>-</button>
+											<button onClick={() => handleUpdateCartQty(item.id, -1)}>
+												-
+											</button>
 											<span>{item.quantity}</span>
-											<button onClick={() => handleUpdateCartQty(item.id, 1)}>+</button>
+											<button onClick={() => handleUpdateCartQty(item.id, 1)}>
+												+
+											</button>
 										</div>
 										<div className="price">CHF {item.subtotal}</div>
 									</div>
@@ -381,7 +439,11 @@ function App() {
 						<button className="ghost" onClick={() => setTab("products")}>
 							Weiter shoppen
 						</button>
-						<button className="primary" onClick={() => setTab("checkout")} disabled={cart.items.length === 0}>
+						<button
+							className="primary"
+							onClick={() => setTab("checkout")}
+							disabled={cart.items.length === 0}
+						>
 							Zum Checkout
 						</button>
 					</div>
@@ -393,7 +455,9 @@ function App() {
 					<div className="panel-header">
 						<div>
 							<p className="eyebrow">Konto</p>
-							<h2>{user ? `Willkommen, ${user.name}` : "Login oder registrieren"}</h2>
+							<h2>
+								{user ? `Willkommen, ${user.name}` : "Login oder registrieren"}
+							</h2>
 						</div>
 					</div>
 					{!user ? (
@@ -468,6 +532,17 @@ function App() {
 							<button className="secondary" onClick={() => setTab("checkout")}>
 								Weiter zum Checkout
 							</button>
+							<button
+								className="secondary"
+								onClick={handleDeleteAccount}
+								style={{
+									background: "rgba(255,0,0,0.1)",
+									borderColor: "#ff4444",
+									color: "#ff4444",
+								}}
+							>
+								Account löschen
+							</button>
 						</div>
 					)}
 				</section>
@@ -485,7 +560,9 @@ function App() {
 					{!user && (
 						<div className="panel-sub">
 							<h4>Bitte einloggen</h4>
-							<p className="muted">Melde dich an, um den Checkout abzuschließen.</p>
+							<p className="muted">
+								Melde dich an, um den Checkout abzuschließen.
+							</p>
 							<button className="secondary" onClick={() => setTab("account")}>
 								Zum Login
 							</button>
@@ -494,7 +571,9 @@ function App() {
 					{user && (
 						<>
 							{cart.items.length === 0 ? (
-								<p className="muted">Dein Warenkorb ist leer. Füge Artikel hinzu.</p>
+								<p className="muted">
+									Dein Warenkorb ist leer. Füge Artikel hinzu.
+								</p>
 							) : (
 								<>
 									<div className="cart-list compact">
@@ -569,7 +648,10 @@ function App() {
 							<h2>Danke für deine Bestellung</h2>
 						</div>
 					</div>
-					<p className="muted">Wir haben deine Bestellung erhalten. Eine Bestätigung wurde per E-Mail versendet.</p>
+					<p className="muted">
+						Wir haben deine Bestellung erhalten. Eine Bestätigung wurde per
+						E-Mail versendet.
+					</p>
 					<button className="secondary" onClick={() => setTab("home")}>
 						Zur Startseite
 					</button>

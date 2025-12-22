@@ -1,18 +1,22 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
-const getToken = () => localStorage.getItem('token');
+const getToken = () => localStorage.getItem("token");
 
-export const setToken = (token) => localStorage.setItem('token', token);
+export const setToken = (token) => localStorage.setItem("token", token);
 
-export const removeToken = () => localStorage.removeItem('token');
+export const removeToken = () => localStorage.removeItem("token");
 
 export { getToken };
 
 export const authAPI = {
 	register: async (name, email, password) => {
-		const res = await axios.post(`${API_URL}/auth/register`, { name, email, password });
+		const res = await axios.post(`${API_URL}/auth/register`, {
+			name,
+			email,
+			password,
+		});
 		if (res.data.token) setToken(res.data.token);
 		return res.data;
 	},
@@ -35,11 +39,19 @@ export const usersAPI = {
 		});
 		return res.data;
 	},
+	deleteMe: async () => {
+		const res = await axios.delete(`${API_URL}/users/me`, {
+			headers: { Authorization: `Bearer ${getToken()}` },
+		});
+		return res.data;
+	},
 };
 
 export const productsAPI = {
-	getAll: async (category = '') => {
-		const url = category ? `${API_URL}/products?category=${category}` : `${API_URL}/products`;
+	getAll: async (category = "") => {
+		const url = category
+			? `${API_URL}/products?category=${category}`
+			: `${API_URL}/products`;
 		const res = await axios.get(url);
 		return res.data;
 	},
@@ -57,7 +69,7 @@ export const cartAPI = {
 		const res = await axios.post(
 			`${API_URL}/cart`,
 			{ product_id, quantity },
-			{ headers: { Authorization: `Bearer ${getToken()}` } }
+			{ headers: { Authorization: `Bearer ${getToken()}` } },
 		);
 		return res.data;
 	},
@@ -66,7 +78,7 @@ export const cartAPI = {
 		const res = await axios.put(
 			`${API_URL}/cart/${cartItemId}`,
 			{ quantity },
-			{ headers: { Authorization: `Bearer ${getToken()}` } }
+			{ headers: { Authorization: `Bearer ${getToken()}` } },
 		);
 		return res.data;
 	},
@@ -93,7 +105,7 @@ export const ordersAPI = {
 		const res = await axios.post(
 			`${API_URL}/orders`,
 			{ address_id },
-			{ headers: { Authorization: `Bearer ${getToken()}` } }
+			{ headers: { Authorization: `Bearer ${getToken()}` } },
 		);
 		return res.data;
 	},

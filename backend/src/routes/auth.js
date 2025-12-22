@@ -3,8 +3,21 @@ import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import db from "../db.js";
+import validator from "validator";
+import dns from "dns/promises";
 
 const router = express.Router();
+
+// Check if email domain exists
+async function hasMxRecord(email) {
+	const domain = email.split("@")[1];
+	try {
+		const records = await dns.resolveMx(domain);
+		return records.length > 0;
+	} catch {
+		return false;
+	}
+}
 
 router.post("/register", async (req, res) => {
 	try {
@@ -13,6 +26,14 @@ router.post("/register", async (req, res) => {
 		// Validate
 		if (!email || !password || !name) {
 			res.status(400).json({ error: "All fields required" });
+		}
+
+		if (!validator.isEmail(email)) {
+			res.status(400).json({ error: "Provided email is of wrong format" });
+		}
+
+		if (!hasMxRecord(email)) {
+			res.status(400).json({ error: "Email domain does not exist" });
 		}
 
 		// Check if users exists
@@ -30,7 +51,7 @@ router.post("/register", async (req, res) => {
 
 		// create a user
 		const user = await db.one(
-			` INSERT INTO users (email, password_hash, name) VALUES ($1, $2, $3) RETURNING id, email, name `,
+			`INSERT INTO users (email, password_hash, name) VALUES ($1, $2, $3) RETURNING id, email, name `,
 			[email, password_hash, name],
 		);
 
@@ -63,11 +84,17 @@ router.post("/login", async (req, res) => {
 		const user = await db.oneOrNone(`SELECT * FROM users WHERE email = $1`, [
 			email,
 		]);
+
+		if (!user) {
+			res.status(400).json({ error: "User doesn't exist" });
+		}
+
 		// Check password
 		const validPassword = await bcrypt.compare(password, user.password_hash);
+		console.log(user);
 
-		if (!user || !validPassword) {
-			res.status(400).json({ error: "Invalid credentials" });
+		if (!validPassword) {
+			res.status(400).json({ error: "Wrong password" });
 		}
 
 		// Create JWT token

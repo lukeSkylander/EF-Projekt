@@ -35,4 +35,14 @@ router.put("/me", async (req, res) => {
 	}
 });
 
+// DELETE user profile
+router.delete("/me", async (req, res) => {
+	try {
+		await db.none("DELETE FROM users WHERE id = $1", [req.user.userId]);
+		res.json({ message: "Profile deleted successfully" });
+	} catch (err) {
+		res.status(500).json({ error: "Server error" });
+	}
+});
+
 export default router;
