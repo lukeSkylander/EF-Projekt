@@ -210,6 +210,22 @@ body {
   gap: 8px;
 }
 
+.card-media {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+}
+
+.card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .card h3 {
   margin-top: 4px;
   color: var(--ink);
@@ -275,6 +291,10 @@ body {
   color: var(--ink);
 }
 
+.price.large {
+  font-size: 24px;
+}
+
 .panel {
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -291,6 +311,43 @@ body {
   justify-content: space-between;
   gap: 10px;
   flex-wrap: wrap;
+}
+
+.product-detail {
+  gap: 18px;
+}
+
+.product-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+}
+
+.product-hero {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.product-hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.product-info {
+  display: grid;
+  gap: 12px;
+}
+
+.product-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 .info-grid {
@@ -530,14 +587,18 @@ button {
   padding: 1rem;  
   text-align: center;  
   margin-bottom: 1rem;  
+  border-radius: 12px;  
+  box-shadow: var(--shadow);  
 }  
   
 .success-banner {  
-  background: #44ff44;  
-  color: #000;  
+  background: #d8f7de;  
+  color: #0f5132;  
   padding: 1rem;  
   text-align: center;  
   margin-bottom: 1rem;  
+  border-radius: 12px;  
+  box-shadow: var(--shadow);  
 }  
   
 /* Form styles */  
