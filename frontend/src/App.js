@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import {
 	authAPI,
@@ -9,14 +9,183 @@ import {
 	usersAPI,
 	getToken,
 } from "./api";
+import hoodieBlack from "./assets/productimages/knit-black.jpg";
+import hoodieGray from "./assets/productimages/knit-gray.jpg";
+import hoodiePink from "./assets/productimages/knit-pink.jpg";
+import hoodieRed from "./assets/productimages/knit-red.jpg";
+import hoodieWhite from "./assets/productimages/knit-white.jpg";
+import hoodieBlackCover from "./assets/productimages/knit-black-cover.jpg";
+import hoodieGrayCover from "./assets/productimages/knit-gray-cover.jpg";
+import hoodiePinkCover from "./assets/productimages/knit-pink-cover.jpg";
+import hoodieRedCover from "./assets/productimages/knit-red-cover.jpg";
+import hoodieWhiteCover from "./assets/productimages/knit-white-cover.jpg";
+import longsleeveBlack from "./assets/productimages/longsleeve-black.jpg";
+import longsleeveGray from "./assets/productimages/longsleeve-gray.jpg";
+import longsleevePink from "./assets/productimages/longsleeve-pink.jpg";
+import longsleeveRed from "./assets/productimages/longsleeve-red.jpg";
+import longsleeveWhite from "./assets/productimages/lonsleeve-white.jpg";
+import longsleeveBlackCover from "./assets/productimages/longsleeve-black-cover.jpg";
+import longsleeveGrayCover from "./assets/productimages/longsleeve-gray-cover.jpg";
+import longsleevePinkCover from "./assets/productimages/longsleeve-pink-cover.jpg";
+import longsleeveRedCover from "./assets/productimages/longsleeve-red-cover.jpg";
+import longsleeveWhiteCover from "./assets/productimages/lonsleeve-white-cover.jpg";
+import tshirtBlack from "./assets/productimages/tshirt-black.jpg";
+import tshirtGray from "./assets/productimages/tshirt-gray.jpg";
+import tshirtPink from "./assets/productimages/tshirt-pink.jpg";
+import tshirtRed from "./assets/productimages/tshirt-red.jpg";
+import tshirtWhite from "./assets/productimages/tshirt-white.jpg";
+import tshirtBlackCover from "./assets/productimages/tshirt-black-cover.jpg";
+import tshirtGrayCover from "./assets/productimages/tshirt-gray-cover.jpg";
+import tshirtPinkCover from "./assets/productimages/tshirt-pink-cover.jpg";
+import tshirtRedCover from "./assets/productimages/tshirt-red-cover.jpg";
+import tshirtWhiteCover from "./assets/productimages/tshirt-white-cover.jpg";
+import eclipseLogo from "./assets/eclipse-logo.jpg";
+
+const imageLookup = {
+	hoodie: {
+		black: hoodieBlack,
+		gray: hoodieGray,
+		grey: hoodieGray,
+		white: hoodieWhite,
+		red: hoodieRed,
+		pink: hoodiePink,
+		default: hoodieGray,
+	},
+	"t-shirt": {
+		black: tshirtBlack,
+		gray: tshirtGray,
+		grey: tshirtGray,
+		white: tshirtWhite,
+		red: tshirtRed,
+		pink: tshirtPink,
+		default: tshirtWhite,
+	},
+	longsleeve: {
+		black: longsleeveBlack,
+		gray: longsleeveGray,
+		grey: longsleeveGray,
+		white: longsleeveWhite,
+		red: longsleeveRed,
+		pink: longsleevePink,
+		default: longsleeveGray,
+	},
+};
+
+const coverImageLookup = {
+	hoodie: {
+		black: hoodieBlackCover,
+		gray: hoodieGrayCover,
+		grey: hoodieGrayCover,
+		white: hoodieWhiteCover,
+		red: hoodieRedCover,
+		pink: hoodiePinkCover,
+		default: hoodieGrayCover,
+	},
+	"t-shirt": {
+		black: tshirtBlackCover,
+		gray: tshirtGrayCover,
+		grey: tshirtGrayCover,
+		white: tshirtWhiteCover,
+		red: tshirtRedCover,
+		pink: tshirtPinkCover,
+		default: tshirtWhiteCover,
+	},
+	longsleeve: {
+		black: longsleeveBlackCover,
+		gray: longsleeveGrayCover,
+		grey: longsleeveGrayCover,
+		white: longsleeveWhiteCover,
+		red: longsleeveRedCover,
+		pink: longsleevePinkCover,
+		default: longsleeveGrayCover,
+	},
+};
+
+const resolveColorKey = (color = "") => {
+	const base = normaliseColor(color);
+	const aliases = {
+		blk: "black",
+		blck: "black",
+		black: "black",
+		gry: "gray",
+		gr: "gray",
+		grey: "gray",
+		gray: "gray",
+		wht: "white",
+		white: "white",
+		rd: "red",
+		red: "red",
+		pk: "pink",
+		pnk: "pink",
+		pink: "pink",
+	};
+	return aliases[base] || base;
+};
+
+const normaliseColor = (color = "") =>
+	color
+		.toLowerCase()
+		.replace("ä", "ae")
+		.replace("ö", "oe")
+		.replace("ü", "ue")
+		.replace("ß", "ss")
+		.trim();
+
+const getCategoryKey = (product = {}) => {
+	const category = product.category || "";
+	const name = product.name || "";
+	const description = product.description || "";
+	const lowerCat = category.toLowerCase();
+	const lowerText = `${name} ${description}`.toLowerCase();
+
+	if (lowerCat.includes("hood")) return "hoodie";
+	if (lowerCat.includes("long") || lowerText.includes("longsleeve") || lowerText.includes("long sleeve")) {
+		return "longsleeve";
+	}
+	if (lowerCat.includes("tee") || lowerCat.includes("t-shirt") || lowerCat.includes("shirt") || lowerText.includes("tee")) {
+		return "t-shirt";
+	}
+	return "t-shirt";
+};
+
+const getProductImage = (product) => {
+	if (!product) return tshirtWhite;
+	const categoryKey = getCategoryKey(product);
+	const colorKey = resolveColorKey(product.color);
+	const fallback =
+		imageLookup[categoryKey]?.[colorKey] ||
+		imageLookup[categoryKey]?.default ||
+		tshirtWhite;
+	return fallback;
+};
+
+const getProductCoverImage = (product) => {
+	if (!product) return tshirtWhiteCover;
+	const categoryKey = getCategoryKey(product);
+	const colorKey = resolveColorKey(product.color);
+	const fallback =
+		coverImageLookup[categoryKey]?.[colorKey] ||
+		coverImageLookup[categoryKey]?.default ||
+		tshirtWhiteCover;
+	return fallback;
+};
+
+const getCategoryLabel = (product) => {
+	const key = getCategoryKey(product);
+	if (key === "longsleeve") return "longsleeve";
+	if (key === "hoodie") return "hoodie";
+	return "t-shirt";
+};
 
 function App() {
 	const [tab, setTab] = useState("home");
 	const [products, setProducts] = useState([]);
+	const [selectedProduct, setSelectedProduct] = useState(null);
 	const [cart, setCart] = useState({ items: [], total: 0, count: 0 });
 	const [user, setUser] = useState(null);
 	const [search, setSearch] = useState("");
 	const [selectedCategory, setSelectedCategory] = useState("All");
+	const [isLoadingProducts, setIsLoadingProducts] = useState(false);
 
 	// Login/Register form states
 	const [loginEmail, setLoginEmail] = useState("");
@@ -34,36 +203,15 @@ function App() {
 	const [error, setError] = useState("");
 	const [success, setSuccess] = useState("");
 
-	// Auto-clear messages with fade
+	// Clear banners after a short delay
 	useEffect(() => {
-		if (error || success) {
-			const fadeTimer = setTimeout(() => {
-				// Add fade class
-				document
-					.querySelector(".error-banner, .success-banner")
-					?.classList.add("fade-out");
-			}, 2500);
-
-			const clearTimer = setTimeout(() => {
-				setError("");
-				setSuccess("");
-			}, 3000);
-
-			return () => {
-				clearTimeout(fadeTimer);
-				clearTimeout(clearTimer);
-			};
-		}
+		if (!error && !success) return undefined;
+		const timer = setTimeout(() => {
+			setError("");
+			setSuccess("");
+		}, 2800);
+		return () => clearTimeout(timer);
 	}, [error, success]);
-
-	// Check if logged in on mount
-	useEffect(() => {
-		if (getToken()) {
-			loadUser();
-			loadCart();
-		}
-		loadProducts();
-	}, []);
 
 	// Check if logged in on mount
 	useEffect(() => {
@@ -86,10 +234,14 @@ function App() {
 
 	const loadProducts = async (category = "") => {
 		try {
+			setIsLoadingProducts(true);
+			setSelectedProduct(null);
 			const data = await productsAPI.getAll(category);
 			setProducts(data);
 		} catch (err) {
 			console.error("Load products failed:", err);
+		} finally {
+			setIsLoadingProducts(false);
 		}
 	};
 
@@ -108,11 +260,11 @@ function App() {
 		try {
 			const data = await authAPI.login(loginEmail, loginPassword);
 			setUser(data.user);
-			setSuccess("Login successful!");
+			setSuccess("Login erfolgreich!");
 			await loadCart();
 			setTab("products");
 		} catch (err) {
-			setError(err.response?.data?.error || "Login failed");
+			setError(err.response?.data?.error || "Login fehlgeschlagen");
 		}
 	};
 
@@ -122,11 +274,11 @@ function App() {
 		try {
 			const data = await authAPI.register(regName, regEmail, regPassword);
 			setUser(data.user);
-			setSuccess("Registration successful!");
+			setSuccess("Registrierung erfolgreich!");
 			await loadCart();
 			setTab("products");
 		} catch (err) {
-			setError(err.response?.data?.error || "Registration failed");
+			setError(err.response?.data?.error || "Registrierung fehlgeschlagen");
 		}
 	};
 
@@ -134,37 +286,23 @@ function App() {
 		authAPI.logout();
 		setUser(null);
 		setCart({ items: [], total: 0, count: 0 });
+		setSelectedProduct(null);
 		setTab("home");
-	};
-
-	const handleDeleteAccount = async () => {
-		if (!window.confirm("Are you sure? This cannot be undone!")) return;
-
-		try {
-			await usersAPI.deleteMe();
-			authAPI.logout();
-			setUser(null);
-			setCart({ items: [], total: 0, count: 0 });
-			setSuccess("Account deleted successfully");
-			setTab("home");
-		} catch (err) {
-			setError(err.response?.data?.error || "Failed to delete account");
-		}
 	};
 
 	const handleAddToCart = async (productId) => {
 		if (!user) {
-			setError("Please login first");
+			setError("Bitte zuerst einloggen");
 			setTab("account");
 			return;
 		}
 		try {
 			await cartAPI.add(productId, 1);
 			await loadCart();
-			setSuccess("Added to cart!");
+			setSuccess("Zum Warenkorb hinzugefügt!");
 			setTab("cart");
 		} catch (err) {
-			setError(err.response?.data?.error || "Failed to add to cart");
+			setError(err.response?.data?.error || "Konnte nicht hinzugefügt werden");
 		}
 	};
 
@@ -179,7 +317,7 @@ function App() {
 			}
 			await loadCart();
 		} catch (err) {
-			setError(err.response?.data?.error || "Failed to update cart");
+			setError(err.response?.data?.error || "Konnte Warenkorb nicht aktualisieren");
 		}
 	};
 
@@ -187,11 +325,10 @@ function App() {
 		e.preventDefault();
 		setError("");
 		if (cart.items.length === 0) {
-			setError("Cart is empty");
+			setError("Warenkorb ist leer");
 			return;
 		}
 		try {
-			// Create address
 			const address = await addressesAPI.create({
 				street: checkoutStreet,
 				city: checkoutCity,
@@ -199,25 +336,35 @@ function App() {
 				country: checkoutCountry,
 			});
 
-			// Create order
 			await ordersAPI.create(address.id);
 
-			setSuccess("Order placed successfully!");
+			setSuccess("Bestellung erfolgreich!");
 			await loadCart();
 			setTab("confirmation");
 		} catch (err) {
-			setError(err.response?.data?.error || "Checkout failed");
+			setError(err.response?.data?.error || "Checkout fehlgeschlagen");
 		}
 	};
 
 	const handleCategoryChange = (category) => {
 		setSelectedCategory(category);
+		setSelectedProduct(null);
 		if (category === "All") {
 			loadProducts();
 		} else {
 			const apiCategory = category === "T-Shirts" ? "t-shirt" : "hoodie";
 			loadProducts(apiCategory);
 		}
+	};
+
+	const handleViewProduct = (product) => {
+		setSelectedProduct(product);
+		setTab("productDetail");
+	};
+
+	const handleBackToListing = () => {
+		setSelectedProduct(null);
+		setTab("products");
 	};
 
 	const filteredProducts = search
@@ -232,17 +379,10 @@ function App() {
 		<div className="page">
 			<nav className="topbar">
 				<div className="brand">
-					<img
-						className="brand-logo"
-						src="/eclipse-logo.jpg"
-						alt="Eclipse Studios"
-					/>
+					<img className="brand-logo" src={eclipseLogo} alt="Eclipse Studios" />
 				</div>
 				<div className="nav-links">
-					<button
-						className={`nav-link ${tab === "home" ? "active" : ""}`}
-						onClick={() => setTab("home")}
-					>
+					<button className={`nav-link ${tab === "home" ? "active" : ""}`} onClick={() => { setSelectedProduct(null); setTab("home"); }}>
 						Startseite
 					</button>
 					<button
@@ -263,22 +403,13 @@ function App() {
 					>
 						Hoodies
 					</button>
-					<button
-						className={`nav-link ${tab === "products" ? "active" : ""}`}
-						onClick={() => setTab("products")}
-					>
+					<button className={`nav-link ${tab === "products" ? "active" : ""}`} onClick={() => { handleCategoryChange("All"); setTab("products"); }}>
 						Alle Produkte
 					</button>
-					<button
-						className={`nav-link ${tab === "cart" ? "active" : ""}`}
-						onClick={() => setTab("cart")}
-					>
+					<button className={`nav-link ${tab === "cart" ? "active" : ""}`} onClick={() => setTab("cart")}>
 						Warenkorb ({cart.count || 0})
 					</button>
-					<button
-						className={`nav-link ${tab === "account" ? "active" : ""}`}
-						onClick={() => setTab("account")}
-					>
+					<button className={`nav-link ${tab === "account" ? "active" : ""}`} onClick={() => setTab("account")}>
 						{user ? user.name : "Konto"}
 					</button>
 					{user && (
@@ -287,7 +418,7 @@ function App() {
 						</button>
 					)}
 				</div>
-				<div className="pill mini-pill">Kostenloser Versand ab 120 €</div>
+				<div className="pill mini-pill">Kostenloser Versand ab 120 CHF</div>
 			</nav>
 
 			{error && <div className="error-banner">{error}</div>}
@@ -299,8 +430,7 @@ function App() {
 						<div className="eyebrow">Eclipse Studios</div>
 						<h1>Monochrome Streetwear, inspiriert vom Logo.</h1>
 						<p className="lede">
-							Klare Silhouetten, satte Stoffe und dezentes Branding. T-Shirts
-							und Hoodies in abgestimmten Farbstories.
+							Klare Silhouetten, satte Stoffe | T-Shirts und Hoodies in abgestimmten Farbstories.
 						</p>
 						<div className="hero-actions">
 							<button className="primary" onClick={() => setTab("products")}>
@@ -326,9 +456,7 @@ function App() {
 						<div className="collection-card">
 							<p className="eyebrow">T-Shirts</p>
 							<h3>Elevated cores</h3>
-							<p className="muted">
-								Schwerer Jersey, klare Linien, ruhige Farben.
-							</p>
+							<p className="muted">Schwerer Jersey, klare Linien, ruhige Farben.</p>
 							<button
 								className="mini ghost-link"
 								onClick={() => {
@@ -342,9 +470,7 @@ function App() {
 						<div className="collection-card">
 							<p className="eyebrow">Hoodies</p>
 							<h3>Layered warmth</h3>
-							<p className="muted">
-								Gebürstetes Fleece und limitierte Färbungen.
-							</p>
+							<p className="muted">Gebürstetes Fleece und limitierte Färbungen.</p>
 							<button
 								className="mini ghost-link"
 								onClick={() => {
@@ -365,11 +491,7 @@ function App() {
 						<div>
 							<p className="eyebrow">Kategorien</p>
 							<h2>
-								{tab === "tshirts"
-									? "T-Shirts"
-									: tab === "hoodies"
-										? "Hoodies"
-										: "Alle Produkte"}
+								{tab === "tshirts" ? "T-Shirts" : tab === "hoodies" ? "Hoodies" : "Alle Produkte"}
 							</h2>
 						</div>
 						<div className="control-group">
@@ -377,7 +499,7 @@ function App() {
 								className={`chip ${selectedCategory === "All" ? "active" : ""}`}
 								onClick={() => handleCategoryChange("All")}
 							>
-								All
+								Alle
 							</button>
 							<button
 								className={`chip ${selectedCategory === "T-Shirts" ? "active" : ""}`}
@@ -402,9 +524,24 @@ function App() {
 						</div>
 					</section>
 					<section className="grid">
+						{isLoadingProducts && <p className="muted">Produkte werden geladen...</p>}
+						{!isLoadingProducts && filteredProducts.length === 0 && (
+							<p className="muted">Keine Produkte gefunden. Bitte Filter anpassen.</p>
+						)}
 						{filteredProducts.map((product) => (
 							<article key={product.id} className="card">
-								<div className="tag">{product.category}</div>
+								<div
+									className="card-media"
+									onClick={() => handleViewProduct(product)}
+									role="button"
+									tabIndex={0}
+									onKeyDown={(e) => {
+										if (e.key === "Enter") handleViewProduct(product);
+									}}
+								>
+									<img src={getProductCoverImage(product)} alt={product.name} loading="lazy" />
+								</div>
+								<div className="tag">{getCategoryLabel(product)}</div>
 								<h3>{product.name}</h3>
 								<p className="muted">{product.description}</p>
 								<div className="swatches">
@@ -413,18 +550,53 @@ function App() {
 								</div>
 								<div className="card-footer">
 									<span className="price">CHF {product.price}</span>
-									<button
-										className="secondary"
-										onClick={() => handleAddToCart(product.id)}
-									>
+									<button className="secondary" onClick={() => handleAddToCart(product.id)}>
 										In den Warenkorb
 									</button>
 								</div>
+								<button className="ghost" onClick={() => handleViewProduct(product)}>
+									Details ansehen
+								</button>
 								<div className="badge">Stock: {product.stock}</div>
 							</article>
 						))}
 					</section>
 				</>
+			)}
+
+			{tab === "productDetail" && selectedProduct && (
+				<section className="panel product-detail">
+					<div className="panel-header">
+						<div>
+							<p className="eyebrow">{getCategoryLabel(selectedProduct)}</p>
+							<h2>{selectedProduct.name}</h2>
+						</div>
+						<button className="ghost" onClick={handleBackToListing}>
+							Zurück
+						</button>
+					</div>
+					<div className="product-detail-grid">
+						<div className="product-hero">
+							<img src={getProductImage(selectedProduct)} alt={selectedProduct.name} />
+						</div>
+						<div className="product-info">
+							<p className="muted">{selectedProduct.description}</p>
+							<div className="swatches">
+								<span className="swatch">{selectedProduct.color}</span>
+								<span className="swatch">Size: {selectedProduct.size}</span>
+							</div>
+							<div className="price large">CHF {selectedProduct.price}</div>
+							<div className="product-actions">
+								<button className="primary" onClick={() => handleAddToCart(selectedProduct.id)}>
+									In den Warenkorb
+								</button>
+								<button className="secondary" onClick={handleBackToListing}>
+									Weiter shoppen
+								</button>
+							</div>
+						</div>
+					</div>
+				</section>
 			)}
 
 			{tab === "cart" && (
@@ -437,9 +609,7 @@ function App() {
 						<div className="pill mini-pill">Total: CHF {cart.total}</div>
 					</div>
 					{cart.items.length === 0 ? (
-						<p className="muted">
-							Dein Warenkorb ist leer. Füge Artikel aus dem Shop hinzu.
-						</p>
+						<p className="muted">Dein Warenkorb ist leer. Füge Artikel aus dem Shop hinzu.</p>
 					) : (
 						<div className="cart-list">
 							{cart.items.map((item) => (
@@ -447,18 +617,14 @@ function App() {
 									<div>
 										<h4>{item.name}</h4>
 										<p className="muted">
-											{item.category} · {item.color} · Size {item.size}
+											{item.category} | {item.color} | Size {item.size}
 										</p>
 									</div>
 									<div className="cart-actions">
 										<div className="qty">
-											<button onClick={() => handleUpdateCartQty(item.id, -1)}>
-												-
-											</button>
+											<button onClick={() => handleUpdateCartQty(item.id, -1)}>-</button>
 											<span>{item.quantity}</span>
-											<button onClick={() => handleUpdateCartQty(item.id, 1)}>
-												+
-											</button>
+											<button onClick={() => handleUpdateCartQty(item.id, 1)}>+</button>
 										</div>
 										<div className="price">CHF {item.subtotal}</div>
 									</div>
@@ -470,11 +636,7 @@ function App() {
 						<button className="ghost" onClick={() => setTab("products")}>
 							Weiter shoppen
 						</button>
-						<button
-							className="primary"
-							onClick={() => setTab("checkout")}
-							disabled={cart.items.length === 0}
-						>
+						<button className="primary" onClick={() => setTab("checkout")} disabled={cart.items.length === 0}>
 							Zum Checkout
 						</button>
 					</div>
@@ -486,9 +648,7 @@ function App() {
 					<div className="panel-header">
 						<div>
 							<p className="eyebrow">Konto</p>
-							<h2>
-								{user ? `Willkommen, ${user.name}` : "Login oder registrieren"}
-							</h2>
+							<h2>{user ? `Willkommen, ${user.name}` : "Login oder registrieren"}</h2>
 						</div>
 					</div>
 					{!user ? (
@@ -563,17 +723,6 @@ function App() {
 							<button className="secondary" onClick={() => setTab("checkout")}>
 								Weiter zum Checkout
 							</button>
-							<button
-								className="secondary"
-								onClick={handleDeleteAccount}
-								style={{
-									background: "rgba(255,0,0,0.1)",
-									borderColor: "#ff4444",
-									color: "#ff4444",
-								}}
-							>
-								Account löschen
-							</button>
 						</div>
 					)}
 				</section>
@@ -591,9 +740,7 @@ function App() {
 					{!user && (
 						<div className="panel-sub">
 							<h4>Bitte einloggen</h4>
-							<p className="muted">
-								Melde dich an, um den Checkout abzuschließen.
-							</p>
+							<p className="muted">Melde dich an, um den Checkout abzuschließen.</p>
 							<button className="secondary" onClick={() => setTab("account")}>
 								Zum Login
 							</button>
@@ -602,9 +749,7 @@ function App() {
 					{user && (
 						<>
 							{cart.items.length === 0 ? (
-								<p className="muted">
-									Dein Warenkorb ist leer. Füge Artikel hinzu.
-								</p>
+								<p className="muted">Dein Warenkorb ist leer. Füge Artikel hinzu.</p>
 							) : (
 								<>
 									<div className="cart-list compact">
@@ -613,7 +758,7 @@ function App() {
 												<div>
 													<h4>{item.name}</h4>
 													<p className="muted">
-														{item.category} · Qty {item.quantity}
+														{item.category} | Qty {item.quantity}
 													</p>
 												</div>
 												<div className="price">CHF {item.subtotal}</div>
@@ -679,17 +824,16 @@ function App() {
 							<h2>Danke für deine Bestellung</h2>
 						</div>
 					</div>
-					<p className="muted">
-						Wir haben deine Bestellung erhalten. Eine Bestätigung wurde per
-						E-Mail versendet.
-					</p>
+					<p className="muted">Wir haben deine Bestellung erhalten. Eine Bestätigung wurde per E-Mail versendet.</p>
 					<button className="secondary" onClick={() => setTab("home")}>
 						Zur Startseite
 					</button>
 				</section>
 			)}
+
 		</div>
 	);
 }
 
 export default App;
+
