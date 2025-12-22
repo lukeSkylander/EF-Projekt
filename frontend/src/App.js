@@ -321,7 +321,7 @@ function App() {
 						<div className="eyebrow">Eclipse Studios</div>
 						<h1>Monochrome Streetwear, inspiriert vom Logo.</h1>
 						<p className="lede">
-							Klare Silhouetten, satte Stoffe und dezentes Branding. T-Shirts und Hoodies in abgestimmten Farbstories.
+							Klare Silhouetten, satte Stoffe | T-Shirts und Hoodies in abgestimmten Farbstories.
 						</p>
 						<div className="hero-actions">
 							<button className="primary" onClick={() => setTab("products")}>
