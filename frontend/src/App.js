@@ -9,35 +9,117 @@ import {
 	usersAPI,
 	getToken,
 } from "./api";
+import hoodieBlack from "./assets/productimages/knit-black.jpg";
+import hoodieGray from "./assets/productimages/knit-gray.jpg";
+import hoodiePink from "./assets/productimages/knit-pink.jpg";
+import hoodieRed from "./assets/productimages/knit-red.jpg";
+import hoodieWhite from "./assets/productimages/knit-white.jpg";
+import hoodieBlackCover from "./assets/productimages/knit-black-cover.jpg";
+import hoodieGrayCover from "./assets/productimages/knit-gray-cover.jpg";
+import hoodiePinkCover from "./assets/productimages/knit-pink-cover.jpg";
+import hoodieRedCover from "./assets/productimages/knit-red-cover.jpg";
+import hoodieWhiteCover from "./assets/productimages/knit-white-cover.jpg";
+import longsleeveBlack from "./assets/productimages/longsleeve-black.jpg";
+import longsleeveGray from "./assets/productimages/longsleeve-gray.jpg";
+import longsleevePink from "./assets/productimages/longsleeve-pink.jpg";
+import longsleeveRed from "./assets/productimages/longsleeve-red.jpg";
+import longsleeveWhite from "./assets/productimages/lonsleeve-white.jpg";
+import longsleeveBlackCover from "./assets/productimages/longsleeve-black-cover.jpg";
+import longsleeveGrayCover from "./assets/productimages/longsleeve-gray-cover.jpg";
+import longsleevePinkCover from "./assets/productimages/longsleeve-pink-cover.jpg";
+import longsleeveRedCover from "./assets/productimages/longsleeve-red-cover.jpg";
+import longsleeveWhiteCover from "./assets/productimages/lonsleeve-white-cover.jpg";
+import tshirtBlack from "./assets/productimages/tshirt-black.jpg";
+import tshirtGray from "./assets/productimages/tshirt-gray.jpg";
+import tshirtPink from "./assets/productimages/tshirt-pink.jpg";
+import tshirtRed from "./assets/productimages/tshirt-red.jpg";
+import tshirtWhite from "./assets/productimages/tshirt-white.jpg";
+import tshirtBlackCover from "./assets/productimages/tshirt-black-cover.jpg";
+import tshirtGrayCover from "./assets/productimages/tshirt-gray-cover.jpg";
+import tshirtPinkCover from "./assets/productimages/tshirt-pink-cover.jpg";
+import tshirtRedCover from "./assets/productimages/tshirt-red-cover.jpg";
+import tshirtWhiteCover from "./assets/productimages/tshirt-white-cover.jpg";
+import eclipseLogo from "./assets/eclipse-logo.jpg";
 
 const imageLookup = {
 	hoodie: {
-		black: "/productimages/knit-black.jpg",
-		gray: "/productimages/knit-gray.jpg",
-		grey: "/productimages/knit-gray.jpg",
-		white: "/productimages/knit-white.jpg",
-		red: "/productimages/knit-red.jpg",
-		pink: "/productimages/knit-pink.jpg",
-		default: "/productimages/knit-gray.jpg",
+		black: hoodieBlack,
+		gray: hoodieGray,
+		grey: hoodieGray,
+		white: hoodieWhite,
+		red: hoodieRed,
+		pink: hoodiePink,
+		default: hoodieGray,
 	},
 	"t-shirt": {
-		black: "/productimages/tshirt-black.jpg",
-		gray: "/productimages/tshirt-gray.jpg",
-		grey: "/productimages/tshirt-gray.jpg",
-		white: "/productimages/tshirt-white.jpg",
-		red: "/productimages/tshirt-red.jpg",
-		pink: "/productimages/tshirt-pink.jpg",
-		default: "/productimages/tshirt-white.jpg",
+		black: tshirtBlack,
+		gray: tshirtGray,
+		grey: tshirtGray,
+		white: tshirtWhite,
+		red: tshirtRed,
+		pink: tshirtPink,
+		default: tshirtWhite,
 	},
 	longsleeve: {
-		black: "/productimages/longsleeve-black.jpg",
-		gray: "/productimages/longsleeve-gray.jpg",
-		grey: "/productimages/longsleeve-gray.jpg",
-		white: "/productimages/lonsleeve-white.jpg",
-		red: "/productimages/longsleeve-red.jpg",
-		pink: "/productimages/longsleeve-pink.jpg",
-		default: "/productimages/longsleeve-gray.jpg",
+		black: longsleeveBlack,
+		gray: longsleeveGray,
+		grey: longsleeveGray,
+		white: longsleeveWhite,
+		red: longsleeveRed,
+		pink: longsleevePink,
+		default: longsleeveGray,
 	},
+};
+
+const coverImageLookup = {
+	hoodie: {
+		black: hoodieBlackCover,
+		gray: hoodieGrayCover,
+		grey: hoodieGrayCover,
+		white: hoodieWhiteCover,
+		red: hoodieRedCover,
+		pink: hoodiePinkCover,
+		default: hoodieGrayCover,
+	},
+	"t-shirt": {
+		black: tshirtBlackCover,
+		gray: tshirtGrayCover,
+		grey: tshirtGrayCover,
+		white: tshirtWhiteCover,
+		red: tshirtRedCover,
+		pink: tshirtPinkCover,
+		default: tshirtWhiteCover,
+	},
+	longsleeve: {
+		black: longsleeveBlackCover,
+		gray: longsleeveGrayCover,
+		grey: longsleeveGrayCover,
+		white: longsleeveWhiteCover,
+		red: longsleeveRedCover,
+		pink: longsleevePinkCover,
+		default: longsleeveGrayCover,
+	},
+};
+
+const resolveColorKey = (color = "") => {
+	const base = normaliseColor(color);
+	const aliases = {
+		blk: "black",
+		blck: "black",
+		black: "black",
+		gry: "gray",
+		gr: "gray",
+		grey: "gray",
+		gray: "gray",
+		wht: "white",
+		white: "white",
+		rd: "red",
+		red: "red",
+		pk: "pink",
+		pnk: "pink",
+		pink: "pink",
+	};
+	return aliases[base] || base;
 };
 
 const normaliseColor = (color = "") =>
@@ -49,23 +131,50 @@ const normaliseColor = (color = "") =>
 		.replace("ß", "ss")
 		.trim();
 
-const getCategoryKey = (category = "") => {
-	const lower = category.toLowerCase();
-	if (lower.includes("hood")) return "hoodie";
-	if (lower.includes("long")) return "longsleeve";
-	if (lower.includes("tee")) return "t-shirt";
+const getCategoryKey = (product = {}) => {
+	const category = product.category || "";
+	const name = product.name || "";
+	const description = product.description || "";
+	const lowerCat = category.toLowerCase();
+	const lowerText = `${name} ${description}`.toLowerCase();
+
+	if (lowerCat.includes("hood")) return "hoodie";
+	if (lowerCat.includes("long") || lowerText.includes("longsleeve") || lowerText.includes("long sleeve")) {
+		return "longsleeve";
+	}
+	if (lowerCat.includes("tee") || lowerCat.includes("t-shirt") || lowerCat.includes("shirt") || lowerText.includes("tee")) {
+		return "t-shirt";
+	}
 	return "t-shirt";
 };
 
 const getProductImage = (product) => {
-	if (!product) return "/productimages/tshirt-white.jpg";
-	const categoryKey = getCategoryKey(product.category);
-	const colorKey = normaliseColor(product.color);
+	if (!product) return tshirtWhite;
+	const categoryKey = getCategoryKey(product);
+	const colorKey = resolveColorKey(product.color);
 	const fallback =
 		imageLookup[categoryKey]?.[colorKey] ||
 		imageLookup[categoryKey]?.default ||
-		"/productimages/tshirt-white.jpg";
-	return product.image_url || fallback;
+		tshirtWhite;
+	return fallback;
+};
+
+const getProductCoverImage = (product) => {
+	if (!product) return tshirtWhiteCover;
+	const categoryKey = getCategoryKey(product);
+	const colorKey = resolveColorKey(product.color);
+	const fallback =
+		coverImageLookup[categoryKey]?.[colorKey] ||
+		coverImageLookup[categoryKey]?.default ||
+		tshirtWhiteCover;
+	return fallback;
+};
+
+const getCategoryLabel = (product) => {
+	const key = getCategoryKey(product);
+	if (key === "longsleeve") return "longsleeve";
+	if (key === "hoodie") return "hoodie";
+	return "t-shirt";
 };
 
 function App() {
@@ -270,7 +379,7 @@ function App() {
 		<div className="page">
 			<nav className="topbar">
 				<div className="brand">
-					<img className="brand-logo" src="/eclipse-logo.jpg" alt="Eclipse Studios" />
+					<img className="brand-logo" src={eclipseLogo} alt="Eclipse Studios" />
 				</div>
 				<div className="nav-links">
 					<button className={`nav-link ${tab === "home" ? "active" : ""}`} onClick={() => { setSelectedProduct(null); setTab("home"); }}>
@@ -430,9 +539,9 @@ function App() {
 										if (e.key === "Enter") handleViewProduct(product);
 									}}
 								>
-									<img src={getProductImage(product)} alt={product.name} loading="lazy" />
+									<img src={getProductCoverImage(product)} alt={product.name} loading="lazy" />
 								</div>
-								<div className="tag">{product.category}</div>
+								<div className="tag">{getCategoryLabel(product)}</div>
 								<h3>{product.name}</h3>
 								<p className="muted">{product.description}</p>
 								<div className="swatches">
@@ -459,7 +568,7 @@ function App() {
 				<section className="panel product-detail">
 					<div className="panel-header">
 						<div>
-							<p className="eyebrow">{selectedProduct.category}</p>
+							<p className="eyebrow">{getCategoryLabel(selectedProduct)}</p>
 							<h2>{selectedProduct.name}</h2>
 						</div>
 						<button className="ghost" onClick={handleBackToListing}>
@@ -722,20 +831,9 @@ function App() {
 				</section>
 			)}
 
-			<section className="cta">
-				<div>
-					<p className="eyebrow">Style Support</p>
-					<h2>Eclipse Studios Webshop</h2>
-					<p className="lede">T-Shirts und Hoodies mit frischen Produktseiten und Bildern.</p>
-				</div>
-				{!user && (
-					<button className="primary large" onClick={() => setTab("account")}>
-						Konto erstellen
-					</button>
-				)}
-			</section>
 		</div>
 	);
 }
 
 export default App;
+
