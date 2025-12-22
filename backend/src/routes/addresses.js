@@ -1,7 +1,48 @@
 // routes/addresses.js
 import express from "express";
 import db from "../db.js";
+import axios from "axios";
 import { authenticateToken } from "../middleware/auth.js";
+
+// Validate the provided address
+const validateAddress = async (street, city, postalCode, country) => {
+	try {
+		const response = await axios.get(
+			`https://nominatim.openstreetmap.org/search`,
+			{
+				params: {
+					street,
+					city,
+					postalcode: postalCode,
+					country,
+					format: "json",
+					addressdetails: 1,
+				},
+				headers: {
+					"User-Agent": "YourWebshopName/1.0", // Required!
+				},
+			},
+		);
+
+		if (!response.data || response.data.length === 0) {
+			return { valid: false, error: "Address not found" };
+		}
+
+		const result = response.data[0];
+
+		// Check if house number exists in result
+		if (!result.address.house_number) {
+			return { valid: false, error: "House number not found" };
+		}
+
+		return {
+			valid: true,
+			formatted: result.display_name,
+		};
+	} catch (err) {
+		return { valid: false, error: "Address not found" };
+	}
+};
 
 const router = express.Router();
 router.use(authenticateToken);
@@ -26,6 +67,18 @@ router.post("/", async (req, res) => {
 
 		if (!street || !city || !postal_code || !country) {
 			return res.status(400).json({ error: "All fields required" });
+		}
+		// Validate Swiss address
+		if (country === "Switzerland") {
+			const validation = await validateAddress(
+				street,
+				city,
+				postal_code,
+				country,
+			);
+			if (!validation.valid) {
+				return res.status(400).json({ error: validation.error });
+			}
 		}
 
 		const address = await db.one(
