@@ -688,19 +688,6 @@ function App() {
 					</button>
 				</section>
 			)}
-
-			<section className="cta">
-				<div>
-					<p className="eyebrow">Style Support</p>
-					<h2>Eclipse Studios Webshop</h2>
-					<p className="lede">T-Shirts und Hoodies mit Backend-Integration.</p>
-				</div>
-				{!user && (
-					<button className="primary large" onClick={() => setTab("account")}>
-						Konto erstellen
-					</button>
-				)}
-			</section>
 		</div>
 	);
 }
