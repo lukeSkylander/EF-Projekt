@@ -34,6 +34,37 @@ function App() {
 	const [error, setError] = useState("");
 	const [success, setSuccess] = useState("");
 
+	// Auto-clear messages with fade
+	useEffect(() => {
+		if (error || success) {
+			const fadeTimer = setTimeout(() => {
+				// Add fade class
+				document
+					.querySelector(".error-banner, .success-banner")
+					?.classList.add("fade-out");
+			}, 2500);
+
+			const clearTimer = setTimeout(() => {
+				setError("");
+				setSuccess("");
+			}, 3000);
+
+			return () => {
+				clearTimeout(fadeTimer);
+				clearTimeout(clearTimer);
+			};
+		}
+	}, [error, success]);
+
+	// Check if logged in on mount
+	useEffect(() => {
+		if (getToken()) {
+			loadUser();
+			loadCart();
+		}
+		loadProducts();
+	}, []);
+
 	// Check if logged in on mount
 	useEffect(() => {
 		if (getToken()) {
